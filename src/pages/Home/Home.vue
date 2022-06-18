@@ -5,7 +5,10 @@
       <p class="home__header--title">
         因私出国服务平台
       </p>
-      <div class="home__header--user">
+      <div
+        class="home__header--user"
+        @click="goPersonal"
+      >
         <div>
           <img
             class="home__header--avator"
@@ -14,7 +17,7 @@
           >
         </div>
         <div class="home__header--username">
-          name
+          {{ $store.state.userInfo.name }}
         </div>
         <van-icon name="arrow" />
       </div>
@@ -51,6 +54,11 @@ export default {
   name: 'Home',
   components: {
     'function-card': FunctionCard
+  },
+  methods: {
+    goPersonal: function () {
+      this.$router.push('/personal')
+    }
   }
 }
 </script>

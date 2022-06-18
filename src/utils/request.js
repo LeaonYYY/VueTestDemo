@@ -8,7 +8,7 @@ import { Message } from 'element-ui'
 const TIMEOUT = 3000000 // TODO /api/table/searchData 接口请求需较长时间，设置3000000与后端对应
 // 创建 axios 实例
 export const request = axios.create({
-  baseURL: '/', // api的base_url
+  baseURL: 'http://192.168.21.61:99', // api的base_url
   timeout: TIMEOUT,
   validateStatus: function (status) {
     return status < 500 // response status 不在范围内直接 reject
