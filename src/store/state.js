@@ -1,5 +1,5 @@
 const state = {
-  userInfo: {}
+  userInfo: localStorage.getItem('userInfo') || {}
 }
 
 export default state

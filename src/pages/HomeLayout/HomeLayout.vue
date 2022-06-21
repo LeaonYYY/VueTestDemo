@@ -7,16 +7,12 @@
       route
     >
       <van-tabbar-item
-        to="/home"
-        icon="home-o"
+        v-for="item in tabbarItems"
+        :key="item.id"
+        :to="item.path"
+        :icon="item.icon"
       >
         首页
-      </van-tabbar-item>
-      <van-tabbar-item
-        to="/personal"
-        icon="contact"
-      >
-        我的
       </van-tabbar-item>
     </van-tabbar>
   </div>
@@ -27,7 +23,19 @@ export default {
   name: 'HomeLayout',
   data () {
     return {
-      active: 0
+      active: 0,
+      tabbarItems: [
+        {
+          id: 0,
+          path: '/home',
+          icon: 'home-o'
+        },
+        {
+          id: 1,
+          path: '/personal',
+          icon: 'contact'
+        }
+      ]
     }
   }
 }

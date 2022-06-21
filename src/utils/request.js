@@ -10,6 +10,9 @@ const TIMEOUT = 3000000 // TODO /api/table/searchData 接口请求需较长时�
 export const request = axios.create({
   baseURL: 'http://192.168.21.61:99', // api的base_url
   timeout: TIMEOUT,
+  headers: {
+    'Access-Token': localStorage.getItem('access_token') || ''
+  },
   validateStatus: function (status) {
     return status < 500 // response status 不在范围内直接 reject
   }

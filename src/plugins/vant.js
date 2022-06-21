@@ -1,8 +1,6 @@
-// import Vue from 'vue'
-// import { Button, Loading, Overlay, Tabbar, TabbarItem } from 'vant'
+import Vue from 'vue'
+import { Button, Tabbar, TabbarItem, Icon, Image as VanImage, NavBar, Cell, CellGroup, Field, Toast, Form, Radio, RadioGroup, Picker, Popup, Checkbox, CheckboxGroup, DatetimePicker } from 'vant'
 
-// Vue.use(Button)
-// Vue.use(Loading)
-// Vue.use(Overlay)
-// Vue.use(Tabbar)
-// Vue.use(TabbarItem)
+Vue.use(Button).use(Tabbar).use(TabbarItem).use(Icon)
+  .use(VanImage).use(NavBar).use(Cell).use(CellGroup).use(Field).use(Toast).use(Form).use(Radio)
+  .use(RadioGroup).use(Picker).use(Popup).use(Checkbox).use(CheckboxGroup).use(DatetimePicker)

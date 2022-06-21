@@ -5,12 +5,13 @@ const mutations = {
   //   state.barrageList = barrageList
   // }
   login (state, payload) {
-    state.userInfo = payload
+    localStorage.setItem('userInfo', JSON.stringify(payload))
   },
   logout (state) {
     state.userInfo = {}
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
+    localStorage.removeItem('userInfo')
   }
 }
 
