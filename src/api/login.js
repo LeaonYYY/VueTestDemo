@@ -11,3 +11,12 @@ export async function login (body) {
     }
   })
 }
+export async function loginLic (token) {
+  return request({
+    url: '/api/lics/loginLic/loginLic',
+    method: 'POST',
+    params: {
+      token
+    }
+  })
+}

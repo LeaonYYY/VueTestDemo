@@ -79,7 +79,7 @@ export default {
   },
   computed: {
     name () {
-      return JSON.parse(localStorage.getItem('userInfo')).name || ''
+      return JSON.parse(localStorage.getItem('userInfo')).xm || ''
     }
   },
   methods: {
@@ -155,7 +155,10 @@ export default {
 
   .home_body--nav {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    height: 40vw;
+    overflow: auto;
   }
 }
 </style>

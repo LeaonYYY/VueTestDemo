@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import { login } from '@/api/login.js'
+import { login, loginLic } from '@/api/login.js'
 export default {
   name: 'Login',
   data () {
@@ -45,15 +45,27 @@ export default {
   },
   methods: {
     login: async function () {
-      const res = await login({ username: this.username, password: this.password })
-      if (res.msgCode === 0) {
-        localStorage.setItem('access_token', res.item.token.access_token)
-        localStorage.setItem('refresh_token', res.item.token.refresh_token)
-        this.$store.commit('login', res.item.user)
-        this.$router.push('/')
-      } else {
-        console.log(res)
+      try {
+        const res1 = await login({ username: this.username, password: this.password })
+        if (res1.msgCode === 0) {
+          const res2 = await loginLic(res1.item.token.access_token)
+          localStorage.setItem('access_token', res2.item.token.access_token)
+          localStorage.setItem('refresh_token', res2.item.token.refresh_token)
+          localStorage.setItem('userInfo', JSON.stringify(res2.item.user))
+          this.$router.push('/')
+        } else {
+          console.log(res1)
+        }
+      } catch (e) {
+        console.log(e)
       }
+      // if (res.msgCode === 0) {
+      //   localStorage.setItem('access_token', res.item.token.access_token)
+      //   localStorage.setItem('refresh_token', res.item.token.refresh_token)
+      //   this.$router.push('/')
+      // } else {
+      //   console.log(res)
+      // }
     }
   }
 }

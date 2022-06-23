@@ -5,7 +5,7 @@
       title="用证申请"
       left-text="返回"
       left-arrow
-      fixed
+      :fixed="true"
       @click-left="goBack"
     />
     <div style="height: 12vw;" />
@@ -107,29 +107,19 @@
           />
           <van-popup
             v-model="isPickerShow"
+            round
             position="bottom"
           >
             <van-checkbox-group
               v-model="result"
               class="application__checkbox--popup"
             >
-              <van-checkbox name="外交护照">
-                外交护照
-              </van-checkbox>
-              <van-checkbox name="公务护照">
-                公务护照
-              </van-checkbox>
-              <van-checkbox name="普通护照">
-                普通护照
-              </van-checkbox>
-              <van-checkbox name="港澳通行证">
-                港澳通行证
-              </van-checkbox>
-              <van-checkbox name="台湾通行证">
-                台湾通行证
-              </van-checkbox>
-              <van-checkbox name="双程证">
-                双程证
+              <van-checkbox
+                v-for="item in options_certificates"
+                :key="item.id"
+                :name="item.label"
+              >
+                {{ item.label }}
               </van-checkbox>
             </van-checkbox-group>
             <van-button
@@ -214,6 +204,23 @@
               placeholder="请选择一个城市"
               @click="item.isCityPickerShow = true"
             />
+            <van-popup
+              v-model="item.isCityPickerShow"
+              position="right"
+              :style="{
+                width: '100vw',
+                height: '100vh'
+              }"
+            >
+              <city-select
+                :cities="options_cities"
+                :type="item.name"
+                @select="(val)=>{
+                  item.destination = onSelect(val)
+                  item.isCityPickerShow = false
+                }"
+              />
+            </van-popup>
             <van-field
               required
               :value="item.remarks"
@@ -243,16 +250,23 @@
 </template>
 <script>
 import { timeFormat } from '@/utils/dateFormat.js'
+import CitySelect from './components/CitySelect.vue'
+import { fetchDictionary } from '@/api/application.js'
 export default {
   name: 'Application',
+  components: {
+    'city-select': CitySelect
+  },
   data () {
     return {
       currentTime: new Date(),
       checked: 'male', // 性别选择
+      options_certificates: [], // 证件选项
+      options_cities: [], // 城市选项
       result: [], // 证件选择结果
-      isPickerShow: false, // 展示
-      isStartTimeShow: false,
-      isEndTimeShow: false,
+      isPickerShow: false, // 证件选择可见
+      isStartTimeShow: false, // 开始时间可见
+      isEndTimeShow: false, // 结束时间可见
       array_certificates: [], // 证件表单内容
       minDate: new Date(),
       maxDate: new Date(2025, 10, 1)
@@ -263,12 +277,15 @@ export default {
       return this.result.toString()
     }
   },
+  mounted () {
+    this.initData()
+  },
   methods: {
     /**
      * 返回上级
      */
     goBack: function () {
-      history.back()
+      this.$router.back()
     },
     /**
      * 表单提交
@@ -309,6 +326,24 @@ export default {
         }
       })
       this.isPickerShow = false
+    },
+    // 初始化数据
+    initData: async function () {
+      const res = await fetchDictionary('paperwork_type')
+      this.options_certificates = res.page.list
+      const res2 = await fetchDictionary('national')
+      this.options_cities = res2.page.list
+    },
+    /**
+     * 接收选中的城市信息
+     * @param {*} payload 城市选择组件传回的数据
+     */
+    onSelect: function (payload) {
+      if (payload.state === true) {
+        return payload.value
+      } else {
+        console.log(payload)
+      }
     }
   }
 }
