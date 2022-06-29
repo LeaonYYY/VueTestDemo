@@ -11,3 +11,10 @@ export async function fetchDictionary (type) {
     }
   })
 }
+export async function submitApproval (body) {
+  return request({
+    url: '/api/lic/approval/v1.0/save',
+    method: 'POST',
+    data: body
+  })
+}

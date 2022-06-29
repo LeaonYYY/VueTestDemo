@@ -6,129 +6,132 @@
       left-text="返回"
       left-arrow
       :fixed="true"
-      @click-left="goBack"
+      @click-left="()=>{$router.back()}"
     />
-    <div style="height: 12vw;" />
+    <div style="height: 7vh;" />
     <div class="application__form">
       <van-form @submit="submit">
         <van-cell-group>
           <van-field
-            name="name"
+            v-model="userInfo.xm"
+            name="leader"
             label="姓名"
             required
+            readonly
           />
           <van-field
             name="sex"
             label="性别"
             required
+            readonly
           >
             <template #input>
               <van-radio-group
-                v-model="checked"
+                v-model="userInfo.xbm"
                 direction="horizontal"
               >
-                <van-radio name="male">
+                <van-radio name="0">
                   男
                 </van-radio>
-                <van-radio name="female">
+                <van-radio name="1">
                   女
                 </van-radio>
               </van-radio-group>
             </template>
           </van-field>
           <van-field
+            v-model="userInfo.csrq"
             name="birthDate"
             label="出生日期"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.jgm"
             name="birthplace"
             label="籍贯"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.mzm"
             name="nation"
             label="民族"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.zzmmm"
             name="politicsStatus"
             label="政治面貌"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.zjhm"
             name="idCard"
             label="身份证号码"
             required
+            readonly
           />
           <van-field
+            v-model="education"
             name="education"
             label="文化程度"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.ssdwm"
             name="department"
             label="工作部门"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.przyjszwm"
             name="job"
             label="职务"
             required
+            readonly
           />
           <van-field
+            v-model="userInfo.jtzz"
             name="address"
             label="家庭住址"
             required
+            readonly
           />
           <van-field
-            name="telephone"
+            v-model="userInfo.phone"
+            name="tellphone"
             label="联系电话"
             required
+            readonly
           />
           <van-field
             name="emergencyContact"
             label="紧急联系人"
-            required
+            placeholder="请输入紧急联系人"
+            readonly
           />
           <van-field
             name="emergencyPhone"
             label="紧急联系电话"
-            required
+            placeholder="请输入紧急联系电话"
+            readonly
           />
           <van-field
             v-model="certificates"
             name="approvalFormEntityList"
             label="选择证件"
+            placeholder="请选择申请的证件"
             required
             clickable
             readonly
+            :error="!certificates"
             @click="isPickerShow = true"
           />
-          <van-popup
-            v-model="isPickerShow"
-            round
-            position="bottom"
-          >
-            <van-checkbox-group
-              v-model="result"
-              class="application__checkbox--popup"
-            >
-              <van-checkbox
-                v-for="item in options_certificates"
-                :key="item.id"
-                :name="item.label"
-              >
-                {{ item.label }}
-              </van-checkbox>
-            </van-checkbox-group>
-            <van-button
-              style="width: 100vw;"
-              @click="handleChange"
-            >
-              确认
-            </van-button>
-          </van-popup>
         </van-cell-group>
         <div
           v-for="item in array_certificates"
@@ -140,16 +143,19 @@
               v-model="item.name"
               label="申领证照名称"
               required
+              readonly
             />
             <van-field
-              v-model="item.certificateId"
+              :value="item.certificateId || '暂无'"
               label="证照号码"
               required
+              readonly
             />
             <van-field
               v-model="item.isNew"
               label="是否新证"
               required
+              readonly
             />
             <van-field
               readonly
@@ -222,14 +228,14 @@
               />
             </van-popup>
             <van-field
+              v-model="item.remarks"
               required
-              :value="item.remarks"
               label="具体地点"
               placeholder="请输入具体的地点"
             />
             <van-field
+              v-model="item.reason"
               required
-              :value="item.reason"
               label="使用事由"
               placeholder="请输入使用的事由"
             />
@@ -245,28 +251,62 @@
           </van-button>
         </div>
       </van-form>
+      <van-popup
+        v-model="isPickerShow"
+        round
+        position="bottom"
+      >
+        <van-checkbox-group
+          v-model="result"
+          class="application__checkbox--popup"
+        >
+          <van-checkbox
+            v-for="item in options_certificates"
+            :key="item.id"
+            :name="item.label"
+          >
+            {{ item.label }}
+          </van-checkbox>
+        </van-checkbox-group>
+        <van-button
+          style="width: 100vw;"
+          @click="handleChange"
+        >
+          确认
+        </van-button>
+      </van-popup>
     </div>
+    <overlay
+      :is-visible="isOverlayShow"
+      :on-close="()=>{isOverlayShow = false}"
+    />
   </div>
 </template>
 <script>
 import { timeFormat } from '@/utils/dateFormat.js'
 import CitySelect from './components/CitySelect.vue'
-import { fetchDictionary } from '@/api/application.js'
+import Overlay from './components/Overlay.vue'
+import { fetchDictionary, submitApproval } from '@/api/application.js'
+import { Toast } from 'vant'
 export default {
   name: 'Application',
   components: {
-    'city-select': CitySelect
+    'city-select': CitySelect,
+    overlay: Overlay
   },
   data () {
     return {
+      userInfo: JSON.parse(localStorage.getItem('userInfo')) || {},
       currentTime: new Date(),
-      checked: 'male', // 性别选择
-      options_certificates: [], // 证件选项
-      options_cities: [], // 城市选项
+      options_certificates: [], // 证件字典
+      options_cities: [], // 城市字典
+      options_education: [], // 文化程度字典
       result: [], // 证件选择结果
       isPickerShow: false, // 证件选择可见
       isStartTimeShow: false, // 开始时间可见
       isEndTimeShow: false, // 结束时间可见
+      isOverlayShow: true, // 行前教育
+      isLoading: false, // 提交表单loading
       array_certificates: [], // 证件表单内容
       minDate: new Date(),
       maxDate: new Date(2025, 10, 1)
@@ -275,6 +315,10 @@ export default {
   computed: {
     certificates () {
       return this.result.toString()
+    },
+    education () {
+      const temp = this.options_education.find(val => val.sort === +this.userInfo.xwm)
+      return temp ? temp.label : ''
     }
   },
   mounted () {
@@ -282,16 +326,36 @@ export default {
   },
   methods: {
     /**
-     * 返回上级
-     */
-    goBack: function () {
-      this.$router.back()
-    },
-    /**
      * 表单提交
      */
-    submit: function (value) {
-      console.log(value)
+    submit: async function (value) {
+      if (this.array_certificates.length === 0) {
+        Toast.fail('请选择要申请的证件')
+        return
+      }
+      const formData = {
+        ...value,
+        approvalFormEntityList: this.array_certificates.map(val => {
+          return {
+            certificate: val.name,
+            certificateId: val.certificateId,
+            destination: val.destination,
+            startTime: val.startTime,
+            endTime: val.endTime,
+            type: this.options_certificates.find(value => value.label === val.name).value,
+            reason: val.reason
+          }
+        })
+      }
+      Reflect.deleteProperty(formData, 'undefined')
+      Toast.loading({
+        message: '提交中...',
+        forbidClick: true,
+        duration: 0
+      })
+      const res = await submitApproval(formData)
+      Toast.clear()
+      console.log(res)
     },
     /**
      * 时间选择确认
@@ -311,7 +375,7 @@ export default {
         return {
           id: index,
           name: value,
-          certificateId: '无',
+          certificateId: '',
           startTime: '',
           isNew: '是',
           endTime: '',
@@ -333,6 +397,8 @@ export default {
       this.options_certificates = res.page.list
       const res2 = await fetchDictionary('national')
       this.options_cities = res2.page.list
+      const res3 = await fetchDictionary('education')
+      this.options_education = res3.page.list
     },
     /**
      * 接收选中的城市信息
@@ -350,10 +416,12 @@ export default {
 </script>
 <style lang="scss" scoped>
 .application__form {
+  height: 93vh;
   overflow: auto;
 }
 
 .application__nav-bar {
+  height: 7vh;
   background-color: #b13a3d;
 
   :nth-child(1),

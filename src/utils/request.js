@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-// import store from '@src/store/index'
+import store from '@/store/index'
+import { refreshToken } from '../api/user'
 // import { getToken } from '@utils/auth'
 
 // 请求超时时间
@@ -10,9 +11,6 @@ const TIMEOUT = 3000000 // TODO /api/table/searchData 接口请求需较长时�
 export const request = axios.create({
   baseURL: 'http://192.168.21.61:99', // api的base_url
   timeout: TIMEOUT,
-  headers: {
-    'Access-Token': localStorage.getItem('access_token') || ''
-  },
   validateStatus: function (status) {
     return status < 500 // response status 不在范围内直接 reject
   }
@@ -45,7 +43,8 @@ const requestInterceptor = request.interceptors.request.use(
       )
         .toISOString()
         .slice(0, -5)
-        .replace('T', ' ')
+        .replace('T', ' '),
+      'Access-Token': localStorage.getItem('access_token') || ''
     }
     return request
   },
@@ -118,6 +117,12 @@ export default request
 function handleMsgCode (data, config) {
   // access_token 过期，需要 refresh
   if (data.msgCode === -10005) {
+    return refreshToken().then((res) => {
+      localStorage.setItem('accessToken', res.item.token.access_token)
+      localStorage.setItem('refreshToken', res.item.token.refresh_token)
+      config.headers['Access-Token'] = res.item.token.access_token
+      return request(config)
+    })
     // return refreshSingleton.create().then((user) => {
     //   // 将之前的 'Access-Token'换成最新的再次请求
     //   config.headers['Access-Token'] =
@@ -127,6 +132,7 @@ function handleMsgCode (data, config) {
   }
   // refresh_token 过期，需要重新登录，不显示提示
   if (data.msgCode !== -10014) {
+    store.commit('logout')
     Message.error(data.errMsg)
   }
   return Promise.reject(data)
