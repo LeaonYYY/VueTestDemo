@@ -4,6 +4,7 @@ import Personal from '@/pages/Personal/Personal.vue'
 import Login from '@/pages/Login/Login.vue'
 import Application from '@/pages/Application/Application.vue'
 import Record from '@/pages/Record/Record'
+import RecordDetail from '@/pages/Record/RecordDetail'
 
 export default [
   {
@@ -35,5 +36,9 @@ export default [
   {
     path: '/record',
     component: Record
+  },
+  {
+    path: '/record-detail/:id',
+    component: RecordDetail
   }
 ]

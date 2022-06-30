@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-import store from '@/store/index'
 import { refreshToken } from '../api/user'
 // import { getToken } from '@utils/auth'
 
@@ -132,7 +131,6 @@ function handleMsgCode (data, config) {
   }
   // refresh_token 过期，需要重新登录，不显示提示
   if (data.msgCode !== -10014) {
-    store.commit('logout')
     Message.error(data.errMsg)
   }
   return Promise.reject(data)

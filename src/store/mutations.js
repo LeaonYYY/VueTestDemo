@@ -1,5 +1,4 @@
 // import * as types from './mutation-types'
-import { refreshToken } from '../api/user'
 const mutations = {
   // [types.SET_BARRAGE_LIST] (state, barrageList) {
   //   state.barrageList = barrageList
@@ -13,9 +12,8 @@ const mutations = {
     localStorage.removeItem('userInfo')
     history.push('/login')
   },
-  refreshToken: async function () {
-    const res = await refreshToken()
-    console.log(res)
+  updateRecordArr (state, payload) {
+    state.recordArr = payload
   }
 }
 
