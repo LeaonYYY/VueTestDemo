@@ -13,9 +13,9 @@
           round
         />
         <div>
-          name
+          {{ username }}
         </div>
-        <div>
+        <div @click="goByPath('/message')">
           <van-icon
             name="envelop-o"
             badge="5"
@@ -36,9 +36,10 @@
         :key="nav.id"
         :title="nav.title"
         :icon="nav.icon"
-      >
-        <van-icon name="arrow" />
-      </van-cell>
+        is-link
+        clickable
+        @click="goByPath(nav.path)"
+      />
     </van-cell-group>
     <div
       class="personal__btn--logout"
@@ -58,32 +59,44 @@ export default {
           id: 0,
           title: '我的消息',
           icon: 'comment-o',
-          path: '/'
+          path: '/message'
         },
         {
           id: 1,
           title: '个人信息',
           icon: 'friends-o',
-          path: '/'
+          path: '/self-info'
         },
         {
           id: 2,
           title: '我的申请',
           icon: 'coupon-o',
-          path: '/'
+          path: '/self-application'
         },
         {
           id: 3,
           title: '我的审批',
           icon: 'passed',
-          path: '/'
+          path: '/self-approve'
         }
       ]
+    }
+  },
+  computed: {
+    username () {
+      return JSON.parse(localStorage.getItem('userInfo')).xm
     }
   },
   methods: {
     logout () {
       this.$router.push('/login')
+    },
+    /**
+     * 路由跳转
+     * @param {string} path 目标路径
+     */
+    goByPath (path) {
+      this.$router.push(path)
     }
   }
 }

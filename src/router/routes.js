@@ -5,6 +5,10 @@ import Login from '@/pages/Login/Login.vue'
 import Application from '@/pages/Application/Application.vue'
 import Record from '@/pages/Record/Record'
 import RecordDetail from '@/pages/Record/RecordDetail'
+import Message from '@/pages/Message/Message.vue'
+import SelfApplication from '@/pages/SelfApplication/SelfApplication.vue'
+import SelfApprove from '@/pages/SelfApprove/SelfApprove.vue'
+import SelfInfo from '@/pages/SelfInfo/SelfInfo.vue'
 
 export default [
   {
@@ -40,5 +44,21 @@ export default [
   {
     path: '/record-detail/:id',
     component: RecordDetail
+  },
+  {
+    path: '/message',
+    component: Message
+  },
+  {
+    path: '/self-application',
+    component: SelfApplication
+  },
+  {
+    path: '/self-approve',
+    component: SelfApprove
+  },
+  {
+    path: '/self-info',
+    component: SelfInfo
   }
 ]
