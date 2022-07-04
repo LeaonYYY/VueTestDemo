@@ -18,7 +18,7 @@
         <div @click="goByPath('/message')">
           <van-icon
             name="envelop-o"
-            badge="5"
+            :badge="msgCount"
             size="large"
           />
         </div>
@@ -50,6 +50,7 @@
   </div>
 </template>
 <script>
+import { fetchMsgCount } from '../../api/message'
 export default {
   name: 'Personal',
   data () {
@@ -79,24 +80,32 @@ export default {
           icon: 'passed',
           path: '/self-approve'
         }
-      ]
+      ],
+      msgCount: 0
     }
   },
   computed: {
     username () {
-      return JSON.parse(localStorage.getItem('userInfo')).xm
+      return JSON.parse(localStorage.getItem('userInfo')).xm || ''
     }
   },
+  mounted () {
+    this.initData()
+  },
   methods: {
-    logout () {
+    logout: function () {
       this.$router.push('/login')
     },
     /**
      * 路由跳转
      * @param {string} path 目标路径
      */
-    goByPath (path) {
+    goByPath: function (path) {
       this.$router.push(path)
+    },
+    initData: async function () {
+      const res = await fetchMsgCount()
+      this.msgCount = res.item.count
     }
   }
 }

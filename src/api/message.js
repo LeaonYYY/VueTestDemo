@@ -15,3 +15,10 @@ export async function changeMsgState (id) {
     method: 'GET'
   })
 }
+
+export async function fetchMsgCount () {
+  return request({
+    url: '/api/lic/message',
+    method: 'GET'
+  })
+}
