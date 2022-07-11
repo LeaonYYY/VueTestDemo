@@ -135,7 +135,7 @@ export default {
   justify-content: space-between;
   width: 80%;
   height: 75%;
-  font-size: 3.75vw;
+  font-size: 3.5vw;
 
   :nth-child(1) {
     display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="self-appli-detail__template">
     <tab-bar
       title="申请详情"
     />
@@ -42,7 +42,10 @@
         />
       </div>
     </div>
-    <div class="self-appli-detail__foooter">
+    <div
+      v-if="isAppli"
+      class="self-appli-detail__foooter"
+    >
       <van-button
         class="self-appli-detail__btn--bottom"
         @click="() => {isDialogShow = true}"
@@ -67,9 +70,9 @@
   </div>
 </template>
 <script>
-import TabBarVue from '@/components/TabBar.vue'
-import StepHeader from './components/StepHeader'
-import Step from './components/Step.vue'
+import TabBarVue from '@/components/TabBar'
+import StepHeader from '@/components/StepHeader'
+import Step from '@/components/Step.vue'
 import { fetchAppliDetail, deleteApplication } from '../../api/selfApplication'
 import { SELF_DETAIL } from './constant'
 import { Notify, Toast } from 'vant'
@@ -130,6 +133,10 @@ export default {
     },
     applyDate () {
       return this.data?.ApprovalFormList?.createDate || '-'
+    },
+    // 是否由我的申请页面跳转
+    isAppli () {
+      return this.$route.query.type === 'appli'
     }
   },
   mounted () {
@@ -143,7 +150,7 @@ export default {
           duration: 0,
           forbidClick: true
         })
-        const res = await fetchAppliDetail(this.$route.params.id)
+        const res = await fetchAppliDetail(this.$route.query.id)
         this.data = res.item
       } catch (err) {
         console.log(err)
@@ -158,7 +165,7 @@ export default {
           forbidClick: true,
           duration: 0
         })
-        const res = await deleteApplication(this.$route.params.id, this.reason)
+        const res = await deleteApplication(this.$route.query.id, this.reason)
         if (res.msgCode === 0) {
           Notify({
             type: 'success',
@@ -182,8 +189,14 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.self-appli-detail__template {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .self-appli-detail__container {
-  height: 84vh;
+  flex: 1;
   overflow: auto;
   background-color: #f4f4f4;
 }
@@ -227,5 +240,9 @@ export default {
   margin: 2vw 3vw;
   background-color: #fff;
   border-radius: 4vw;
+
+  :nth-child(1) {
+    margin: 0.25vw 0;
+  }
 }
 </style>

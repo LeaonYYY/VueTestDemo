@@ -18,8 +18,8 @@
   </div>
 </template>
 <script>
-import test from '../pages/SelfApplication/components/StepHeader'
-import step from '../pages/SelfApplication/components/Step'
+import test from './StepHeader'
+import step from './Step'
 export default {
   name: 'Test',
   components: {

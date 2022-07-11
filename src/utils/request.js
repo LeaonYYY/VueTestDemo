@@ -1,11 +1,12 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import router from '../router'
+import { refreshToken } from '../api/user'
 // import { getToken } from '@utils/auth'
 
 // 请求超时时间
-// const TIMEOUT = 10000
-const TIMEOUT = 3000000 // TODO /api/table/searchData 接口请求需较长时间，设置3000000与后端对应
+const TIMEOUT = 10000
+// const TIMEOUT = 3000000 // TODO /api/table/searchData 接口请求需较长时间，设置3000000与后端对应
 // 创建 axios 实例
 export const request = axios.create({
   baseURL: 'http://192.168.21.61:99', // api的base_url
@@ -116,7 +117,12 @@ export default request
 function handleMsgCode (data, config) {
   // access_token 过期，需要 refresh
   if (data.msgCode === -10005) {
-    router.push('/login')
+    refreshToken(config.headers['Access-Token']).then(res => {
+      localStorage.setItem('access_token', res.item.token.access_token)
+      localStorage.setItem('refresh_token', res.item.token.refresh_token)
+      config.headers['Access-Token'] = res.item.token.access_token
+      return request(config)
+    })
     // return refreshSingleton.create().then((user) => {
     //   // 将之前的 'Access-Token'换成最新的再次请求
     //   config.headers['Access-Token'] =

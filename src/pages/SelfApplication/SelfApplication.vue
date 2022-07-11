@@ -21,7 +21,7 @@
               v-for="item in appliList"
               :key="item.id"
               :appli-data="item"
-              @transfer="()=>{$router.push('/self-appli-detail/'+item.applyId)}"
+              @transfer="()=>{$router.push({path: '/self-appli-detail',query: {id: item.applyId,type: 'appli'}})}"
             />
             <van-empty
               v-if="appliList.length === 0"
