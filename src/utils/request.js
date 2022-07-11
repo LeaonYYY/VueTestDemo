@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-import { refreshToken } from '../api/user'
+import router from '../router'
 // import { getToken } from '@utils/auth'
 
 // 请求超时时间
@@ -116,12 +116,7 @@ export default request
 function handleMsgCode (data, config) {
   // access_token 过期，需要 refresh
   if (data.msgCode === -10005) {
-    return refreshToken().then((res) => {
-      localStorage.setItem('accessToken', res.item.token.access_token)
-      localStorage.setItem('refreshToken', res.item.token.refresh_token)
-      config.headers['Access-Token'] = res.item.token.access_token
-      return request(config)
-    })
+    router.push('/login')
     // return refreshSingleton.create().then((user) => {
     //   // 将之前的 'Access-Token'换成最新的再次请求
     //   config.headers['Access-Token'] =
@@ -130,7 +125,8 @@ function handleMsgCode (data, config) {
     // })
   }
   // refresh_token 过期，需要重新登录，不显示提示
-  if (data.msgCode !== -10014) {
+  if (data.msgCode === -10014) {
+    router.push('/login')
     Message.error(data.errMsg)
   }
   return Promise.reject(data)

@@ -18,7 +18,7 @@ export async function changeMsgState (id) {
 
 export async function fetchMsgCount () {
   return request({
-    url: '/api/lic/message',
+    url: '/api/lic/message/v1.0/getCount',
     method: 'GET'
   })
 }

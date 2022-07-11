@@ -60,5 +60,13 @@ export default [
   {
     path: '/self-info',
     component: SelfInfo
+  },
+  {
+    path: '/self-appli-detail/:id',
+    component: () => import('../pages/SelfApplication/SelfApplicationDetail.vue')
+  },
+  {
+    path: '/test',
+    component: () => import('../components/test.vue')
   }
 ]

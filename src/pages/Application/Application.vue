@@ -287,7 +287,7 @@ import { timeFormat } from '@/utils/dateFormat.js'
 import CitySelect from './components/CitySelect.vue'
 import Overlay from './components/Overlay.vue'
 import { fetchDictionary, submitApproval } from '@/api/application.js'
-import { Toast } from 'vant'
+import { Notify, Toast } from 'vant'
 export default {
   name: 'Application',
   components: {
@@ -329,33 +329,49 @@ export default {
      * 表单提交
      */
     submit: async function (value) {
-      if (this.array_certificates.length === 0) {
-        Toast.fail('请选择要申请的证件')
-        return
-      }
-      const formData = {
-        ...value,
-        approvalFormEntityList: this.array_certificates.map(val => {
-          return {
-            certificate: val.name,
-            certificateId: val.certificateId,
-            destination: val.destination,
-            startTime: val.startTime,
-            endTime: val.endTime,
-            type: this.options_certificates.find(value => value.label === val.name).value,
-            reason: val.reason
-          }
+      try {
+        if (this.array_certificates.length === 0) {
+          Toast.fail('请选择要申请的证件')
+          return
+        }
+        const formData = {
+          ...value,
+          approvalFormEntityList: this.array_certificates.map(val => {
+            return {
+              certificate: val.name,
+              certificateId: val.certificateId,
+              destination: val.destination,
+              startTime: val.startTime,
+              endTime: val.endTime,
+              type: this.options_certificates.find(value => value.label === val.name).value,
+              reason: val.reason
+            }
+          })
+        }
+        Reflect.deleteProperty(formData, 'undefined')
+        Toast.loading({
+          message: '提交中...',
+          forbidClick: true,
+          duration: 0
         })
+        const res = await submitApproval(formData)
+        if (res.msgCode === 0) {
+          Notify({
+            type: 'success',
+            message: '申请成功'
+          })
+          this.result = []
+        } else {
+          Notify({
+            type: 'danger',
+            message: '申请失败'
+          })
+        }
+      } catch (err) {
+        console.log(err)
+      } finally {
+        Toast.clear()
       }
-      Reflect.deleteProperty(formData, 'undefined')
-      Toast.loading({
-        message: '提交中...',
-        forbidClick: true,
-        duration: 0
-      })
-      const res = await submitApproval(formData)
-      Toast.clear()
-      console.log(res)
     },
     /**
      * 时间选择确认
