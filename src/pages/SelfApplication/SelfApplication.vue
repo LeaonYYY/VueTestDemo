@@ -11,31 +11,30 @@
           :key="tab.id"
           :name="tab.type"
           :title="tab.title"
-        >
-          <van-pull-refresh
-            v-model="isPullReFreshLoading"
-            style="height: 86vh; overflow: auto;"
-            @refresh="handleTabsChange(tab.type,'')"
-          >
-            <appli-card
-              v-for="item in appliList"
-              :key="item.id"
-              :appli-data="item"
-              @transfer="()=>{$router.push({path: '/self-appli-detail',query: {id: item.applyId,type: 'appli'}})}"
-            />
-            <van-empty
-              v-if="appliList.length === 0"
-              description="暂无数据"
-            />
-            <div
-              v-if="appliList.length !== 0"
-              class="self-appli__bottom--text"
-            >
-              没有更多了
-            </div>
-          </van-pull-refresh>
-        </van-tab>
+        />
       </van-tabs>
+      <van-pull-refresh
+        v-model="isPullReFreshLoading"
+        style="height: 86vh; overflow: auto;"
+        @refresh="handleTabsChange(focusName,'')"
+      >
+        <appli-card
+          v-for="item in appliList"
+          :key="item.id"
+          :appli-data="item"
+          @transfer="()=>{$router.push({path: '/self-appli-detail',query: {id: item.applyId,type: 'appli'}})}"
+        />
+        <van-empty
+          v-if="appliList.length === 0"
+          description="暂无数据"
+        />
+        <div
+          v-if="appliList.length !== 0"
+          class="self-appli__bottom--text"
+        >
+          没有更多了
+        </div>
+      </van-pull-refresh>
     </div>
   </div>
 </template>
@@ -57,7 +56,8 @@ export default {
       appliList: [], // 接口返回的数据列表
       activeName: 5, // 当前tab的name
       isPullReFreshLoading: false,
-      cardNum: 0
+      cardNum: 0,
+      focusName: 0 // 当前tab
     }
   },
   mounted () {
@@ -71,6 +71,7 @@ export default {
      */
     handleTabsChange: async function (name, title) {
       try {
+        this.focusName = name
         Toast.loading({
           duration: 0,
           message: '加载中',
@@ -78,10 +79,8 @@ export default {
         })
         const params = {
           pageNo: 0,
-          pageSize: 20
-        }
-        if (name !== -1) {
-          params.status = name
+          pageSize: 20,
+          status: name !== -1 ? name : undefined
         }
         const res = await fetchAppliList(params)
         this.appliList = res.page.list
